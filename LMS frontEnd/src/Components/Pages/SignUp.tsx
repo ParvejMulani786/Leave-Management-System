@@ -4,7 +4,7 @@ import { GoogleOutlined, FacebookFilled, TwitterOutlined}  from '@ant-design/ico
 import '../../App.css';
 import { useNavigate } from "react-router-dom";
 import  IUser  from "../Model/user";
-import  IValidUser  from "../Model/user";
+import  IValidUser  from "../Model/validUser";
 
 import userService from "../Service/userService";
 
@@ -13,18 +13,23 @@ import userService from "../Service/userService";
 interface ISignUp {
   user: IUser,
   
+  
 }
+interface ISignUp1  {
+  
+  vuser:IValidUser,
+}
+
 
 
 
 
   
 const SignUp: React.FC = () => {
-    // const nav = useNavigate();
+    const nav = useNavigate();
     const [ state, setState] = useState < ISignUp >({
       user:{
-        name : "",
-        // gender :"",
+        name : "", 
         role : "",
         contact : "",
         email : "",
@@ -33,12 +38,12 @@ const SignUp: React.FC = () => {
       }
        })
 
-       const [ validUser, setValidUser ] = useState < ISignUp >({
+       const [ validUser, setValidUser ] = useState < ISignUp1 >({
 
-        user:{
+        vuser:{
          
+          userId : "",
           name : "",
-          // gender :"",
           role : "",
           contact : "",
           email : "",
@@ -67,21 +72,26 @@ const SignUp: React.FC = () => {
                 console.log(data);
                   userService.create(data)
                   .then((response: any) => {
+
                     setValidUser({
                       
-                      user:{
-                        name : response.state.user.name,
-                        role: response.state.user.role,
-                        contact: response.state.user.contact,
-                        email: response.state.user.email,
-                        password:response.state.user.password,
+                      vuser:{
+                        userId: response.data.userId,
+                        name : response.data.name,
+                        role: response.data.role,
+                        contact: response.data.contact,
+                        email: response.data.email,
+                        password:response.data.password,
                         
                       }
                      
                     });
-                    console.log(response.state.user);
+                    console.log("state =>" + validUser.vuser.role);
+                    console.log(response.data.name);
+                    console.log(response.data.userId);
+                    console.log(response.data);
                   })
-                  .catch((e: Error) => {
+                  .catch((e: any) => {
                     console.log(e);
                   });
           }
@@ -206,9 +216,9 @@ const SignUp: React.FC = () => {
         <Input.Password placeholder='Enter confirm your password'/>
       </Form.Item> */}
 
-      <Form.Item>
-      <Button type='primary' htmlType='submit' block>Sign Up</Button>
-      </Form.Item>
+      
+      <Button  type='primary' htmlType='submit' block >Sign Up</Button>
+      
 
       <Divider style={{borderColor:'black'}}> or Sign Up with</Divider>
       <div className='socialLogin'>

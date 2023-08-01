@@ -11,7 +11,7 @@ class UserDataService {
   }
 
   create(data: IUser) {
-    return http.post<IUser>("/user", data);
+    return http.post<IUser>("/users", data);
   }
 
 //   update(data: IUser, id: any) {

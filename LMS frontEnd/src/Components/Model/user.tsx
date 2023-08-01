@@ -10,8 +10,9 @@
   
 }
 
-export default interface IValidUser {
+export  interface IValidUser extends IUser  {
     
+    userId:string,
     name : string,
     // gender : string,
     role : string,
