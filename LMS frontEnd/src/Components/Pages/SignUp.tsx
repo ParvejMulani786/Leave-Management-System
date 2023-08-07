@@ -75,21 +75,27 @@ const SignUp: React.FC = () => {
 
                     setValidUser({
                       
-                      vuser:{
-                        userId: response.data.userId,
-                        name : response.data.name,
+                      vuser:{ ...validUser.vuser,
+                        
+                        
                         role: response.data.role,
                         contact: response.data.contact,
                         email: response.data.email,
+                        name : response.data.name,
                         password:response.data.password,
+                        userId: response.data.userId,
                         
                       }
                      
                     });
-                    console.log("state =>" + validUser.vuser.role);
+                    console.log("state =>" + validUser);
+                    console.log("state =>" + validUser.vuser.name);
                     console.log(response.data.name);
                     console.log(response.data.userId);
                     console.log(response.data);
+                    let vUser = response.data;
+
+                    nav("/home", {state : vUser});
                   })
                   .catch((e: any) => {
                     console.log(e);

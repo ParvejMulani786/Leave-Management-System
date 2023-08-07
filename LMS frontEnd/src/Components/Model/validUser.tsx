@@ -2,7 +2,7 @@
 
 export  default interface IValidUser   {
     
-    userId:string,
+    userId?: any | null,
     name : string,
     // gender : string,
     role : string,
