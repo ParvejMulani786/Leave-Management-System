@@ -18,3 +18,31 @@
     align-items: center;
     /* font-weight: bold; */
 }
+
+.leaveTable{
+   display: flex;
+  justify-content: center;
+  align-items: center;
+  width:87vw;
+  font-size: 20px; /* Customize text size */
+  white-space: nowrap;
+  
+  /* margin-left: auto; */
+}
+.adminDashboard{
+   display: flex;
+   /* flex-direction: column; */
+  justify-content: center;
+  align-items: center;
+  width:87vw;
+  font-size: 20px; /* Customize text size */
+  white-space: nowrap;
+  
+  /* margin-left: auto; */
+}
+
+.ant-table {
+  width: 100%;
+}
+
+

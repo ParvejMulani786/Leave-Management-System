@@ -1,5 +1,6 @@
 import http from "../Inc/httpcommon";
 import IUser from "../Model/user"
+import ILeave from "../Model/leave"
 
 class UserDataService {
   getAll() {
@@ -11,8 +12,13 @@ class UserDataService {
   }
 
   create(data: IUser) {
-    return http.post<IUser>("/user", data);
+    return http.post<IUser>("/signup", data);
   }
+
+  createLeave(data: ILeave) {
+    return http.post<ILeave>("/leave", data);
+  }
+
 
 //   update(data: IUser, id: any) {
 //     return http.put<any>(`/tutorials/${id}`, data);

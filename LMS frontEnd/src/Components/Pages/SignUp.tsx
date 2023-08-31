@@ -1,114 +1,106 @@
 import React, { FunctionComponent, useState } from "react";
-import { Form, Divider, Input , Button, Typography, message, InputNumber, Select } from 'antd';
+import { Form, Divider, Input , Button, Typography, message, InputNumber, Select, DatePicker } from 'antd';
 import { GoogleOutlined, FacebookFilled, TwitterOutlined}  from '@ant-design/icons'
 import '../../App.css';
 import { useNavigate } from "react-router-dom";
-import  IUser  from "../Model/user";
-import  IValidUser  from "../Model/validUser";
-
+import {Moment} from "moment";
 import userService from "../Service/userService";
+import { PickerProps } from 'antd/lib/date-picker/generatePicker';
+import dayjs, { Dayjs } from 'dayjs';
 
-
-
-interface ISignUp {
-  user: IUser,
-  
-  
+export  interface IUser {
+        email : string,
+        empname : string, 
+        gender :string,
+        dob1?: Dayjs | null,
+        dob : string,
+        role : string,
+        contact : string,
+        password : string,
 }
-interface ISignUp1  {
-  
-  vuser:IValidUser,
-}
-
-
-
-
 
   
 const SignUp: React.FC = () => {
     const nav = useNavigate();
-    const [ state, setState] = useState < ISignUp >({
-      user:{
-        name : "", 
-        role : "",
-        contact : "",
+    const [form] = Form.useForm();
+    const [ formData, setFormData] = useState<IUser>({
         email : "",
-        password : ""
-    
-      }
-       })
+        empname : "", 
+        gender :"",
+        // dob1 : null,
+        dob: "",
+        role : "",
+        contact: "",
+        password : "",
+    });
 
-       const [ validUser, setValidUser ] = useState < ISignUp1 >({
-
-        vuser:{
-         
-          userId : "",
-          name : "",
-          role : "",
-          contact : "",
-          email : "",
-          password : ""
+  const [ gender, setGender ] = useState<string | undefined>();
+  // const [ dob1, setDob] = useState<Dayjs | null>(null);
       
-        }
-         })
+  const handleOptionChange = (value: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      gender: value,
+    }));
+  };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-       const handleInput = (e: React.ChangeEvent<HTMLInputElement>) :void =>{
-          setState({
+  const handleDateChange = (date: any) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      //  dob1: date,
+       dob: date?.format('YYYY-MM-DD') || ''
+    }));
+  };
 
-            user:{
-                ...state.user,
-                [e.target.name] : e.target.value,
+     const handleSave = () => {
+    
+        console.log('Data to save:', formData);
+        let userAuth: boolean = false;
 
-            },
-           })
-          }
+              //User Authorization 
+              if(formData.empname === 'Deepak Madnaik' && formData.role === 'Admin' && formData.email === 'deepak@fathomable.com'){
+                  userAuth = true;
+              }
+              else if ( formData.role !== 'Admin' && formData.email !== 'deepak@fathomable.com' ){
+                   userAuth = true;
+              }
 
-          const sign_up = (e: React.FormEvent<HTMLFormElement>) : void =>{
-            //  e.preventDefault();
-              console.log(state.user);
-
-                const data : IUser = state.user;
-                console.log(data);
-                  userService.create(data)
+              if(userAuth){
+                   userService.create(formData)
                   .then((response: any) => {
-
-                    setValidUser({
-                      
-                      vuser:{ ...validUser.vuser,
-                        
-                        
-                        role: response.data.role,
-                        contact: response.data.contact,
-                        email: response.data.email,
-                        name : response.data.name,
-                        password:response.data.password,
-                        userId: response.data.userId,
-                        
-                      }
-                     
-                    });
-                    console.log("state =>" + validUser);
-                    console.log("state =>" + validUser.vuser.name);
                     console.log(response.data.name);
                     console.log(response.data.userId);
                     console.log(response.data);
                     let vUser = response.data;
-
-                    nav("/home", {state : vUser});
+                    message.success(" User SignUp Successful! Please Signin.");
+                    nav("/");
                   })
                   .catch((e: any) => {
                     console.log(e);
+                     message.error("Error!!");
                   });
+
+              }
+              else{
+                alert("Invalid User!!");
+              }
           }
 
     return (  <>
     <div className="appBg">
-     <Form className='loginform' onFinish={sign_up}
+     <Form  className='signUpform' onFinish={handleSave}
      labelCol={{ span: 7 }}
-     wrapperCol={{ span: 16 }}
+     wrapperCol={{ span: 25 }}
      layout="horizontal"
-     style={{ maxWidth: 600 }}
+     style={{ maxWidth: 900 }}
      >
       <Typography.Title style={{textAlign:'center'}}>Sign Up</Typography.Title>
       <Form.Item
@@ -122,27 +114,36 @@ const SignUp: React.FC = () => {
           whitespace:true
         },
         { min:3}
-      ]} hasFeedback label='Name' name={'name'} >
+      ]} hasFeedback label='Name' name={'empname'} >
         
-        <Input placeholder='Enter your name' name="name"
-      value={state.user.name} onChange={handleInput}/>
+        <Input placeholder='Enter your name' name="empname"
+      value={formData.empname} onChange={handleInputChange}/>
       </Form.Item>
 
 
-      {/* <Form.Item 
+      <Form.Item 
       rules = {[{
         required: true,
         message:'Please select your gender',
       }]}
       name={"gender"} label="Gender">
-        <Select placeholder="Select your gender"    onChange={handleInput} value={state.user.gender}>
-          <Select.Option  name= "male"  value="male">Male</Select.Option>
-          <Select.Option  name= "female" value="female">Female</Select.Option>
-          <Select.Option  name= "other"  value="other">Other</Select.Option>
+        <Select 
+        value={formData.gender}
+        placeholder="Select your gender"
+        onChange={handleOptionChange} 
+        
+        >
+          <Select.Option  name= "gender"  value="male">Male</Select.Option>
+          <Select.Option  name= "gender" value="female">Female</Select.Option>
+          <Select.Option  name= "gender"  value="other">Other</Select.Option>
         </Select>
 
-      </Form.Item> */}
+      </Form.Item>
       
+      <Form.Item label="DOB">
+      <DatePicker value={formData. dob1} onChange={handleDateChange} />    
+      </Form.Item>
+
       <Form.Item
       rules={[
         {
@@ -155,7 +156,7 @@ const SignUp: React.FC = () => {
       
       ]} hasFeedback label='Role' name={'role'} >
         
-        <Input  placeholder='Enter your role' name="role" value={state.user.role} onChange={handleInput}/>
+        <Input  placeholder='Enter your role' name="role" value={formData.role} onChange={handleInputChange}/>
       </Form.Item>
 
 
@@ -171,7 +172,7 @@ const SignUp: React.FC = () => {
         
         <Input 
 
-      placeholder='Enter your contact' name="contact" value={state.user.contact} onChange={handleInput} />
+      placeholder='Enter your contact' name="contact" value={formData.contact} onChange={handleInputChange} />
       </Form.Item>
 
       <Form.Item
@@ -184,7 +185,7 @@ const SignUp: React.FC = () => {
       },
       ]} hasFeedback label='Email' name={'email'} >
         
-        <Input placeholder='Enter your email' name="email" value={state.user.email} onChange={handleInput}/>
+        <Input placeholder='Enter your email' name="email" value={formData.email} onChange={handleInputChange}/>
       </Form.Item>
 
       <Form.Item 
@@ -195,7 +196,7 @@ const SignUp: React.FC = () => {
       },
       ]} hasFeedback
       label='Password' name={'password'} >
-        <Input.Password placeholder='Enter your password' name="password" value={state.user.password} onChange={handleInput}/>
+        <Input.Password placeholder='Enter your password' name="password" value={formData.password} onChange={handleInputChange}/>
       </Form.Item>
 
 
@@ -226,13 +227,13 @@ const SignUp: React.FC = () => {
       <Button  type='primary' htmlType='submit' block >Sign Up</Button>
       
 
-      <Divider style={{borderColor:'black'}}> or Sign Up with</Divider>
+      {/* <Divider style={{borderColor:'black'}}> or Sign Up with</Divider>
       <div className='socialLogin'>
         <GoogleOutlined className='socialIcon' style={{color:'red'}}/>
         <FacebookFilled className='socialIcon'  style={{color:'blue'}}/>
         <TwitterOutlined className='socialIcon'  style={{color:'cyan'}}/>
        
-      </div>
+      </div> */}
      
      </Form>
 
